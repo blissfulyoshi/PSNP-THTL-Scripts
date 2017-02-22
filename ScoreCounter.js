@@ -4,11 +4,16 @@ function printResultsForUsers(userHolder) {
 	var teamScore = 0;
 	for (var k = 0; k < userHolder.length; k++) {
 		var selectedUserForPrinting = dataHolder.userHolder[k];
-		var pageScore = selectedUserForPrinting.trophyCount + ((10 - 1) * selectedUserForPrinting.platinumCount);
-		if (selectedUserForPrinting.forumUserName.indexOf("(HTC)") > -1)
-			pageScore = pageScore * 2;
-		userOutput = userOutput + selectedUserForPrinting.forumUserName + ": " + pageScore + " (" + selectedUserForPrinting.platinumCount + ")" + "\n";
-		teamScore = teamScore + pageScore
+		var userScore = selectedUserForPrinting.trophyCount + ((10 - 1) * selectedUserForPrinting.platinumCount);
+		var userPureScore = selectedUserForPrinting.pureTrophyCount + ((10 - 1) * selectedUserForPrinting.purePlatinumCount);
+		var htcText = "";
+		if (selectedUserForPrinting.forumUserName.indexOf("(HTC)") > -1) {
+			htcText = " (" + userPureScore + ")";
+			userScore = userScore * 2;			
+			userPureScore = userPureScore * 2;
+		}
+		userOutput = userOutput + selectedUserForPrinting.forumUserName + ": " + userScore + " {" + userPureScore + "}" + htcText + " [" + selectedUserForPrinting.purePlatinumCount + "]" + "\n";
+		teamScore = teamScore + userScore
 		
 		//every team is made out of 4 players
 		//so every 4 players print their team score and reset it to 0
@@ -86,7 +91,9 @@ function processUserList() {
 		dataHolder.userHolder[i].userName = userList[2*i];
 		dataHolder.userHolder[i].forumUserName = userList[(2*i)+1];
 		dataHolder.userHolder[i].trophyCount = 0;
+		dataHolder.userHolder[i].pureTrophyCount = 0;
 		dataHolder.userHolder[i].platinumCount = 0;
+		dataHolder.userHolder[i].purePlatinumCount = 0;
 		dataHolder.userHolder[i].gameArray = [];
 		dataHolder.userHolder[i].platinumGameArray = [];		
 	}
@@ -138,6 +145,7 @@ if (inTrophyLog) {
 				else if (trophyRarity === "Ultra Rare")
 					trophyValue = 2;
 				selectedUserInfo.trophyCount += trophyValue
+				selectedUserInfo.pureTrophyCount++;
 				
 				//get name of game and add new ones to array
 				var gameName = trophyRow.children[0].children[0].children[0].getAttribute("title");
@@ -150,6 +158,7 @@ if (inTrophyLog) {
 				var plat = false;
 				if (trophyType === "Platinum") {
 					selectedUserInfo.platinumCount += trophyValue;
+					selectedUserInfo.purePlatinumCount++;
 					selectedUserInfo.platinumGameArray.push(gameName)
 					plat = true;
 				}
